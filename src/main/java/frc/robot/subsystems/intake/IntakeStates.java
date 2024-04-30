@@ -13,6 +13,11 @@ public enum IntakeStates implements SubsystemStates {
         "Intaking", 
         Constants.Intake.OUT_ANGLE, 
         Constants.Intake.INTAKE_SPEED
+    ),
+    OUTTAKING(
+        "Outtaking",
+        Constants.Intake.OUT_ANGLE,
+        -Constants.Intake.INTAKE_SPEED
     );
 
     IntakeStates(String stateString, double angle, double speed) {

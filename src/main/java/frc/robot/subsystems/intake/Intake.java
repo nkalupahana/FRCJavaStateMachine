@@ -23,12 +23,12 @@ public class Intake extends Subsystem<IntakeStates> {
     }
 
     @Override
-    public void runState() {
+    protected void runState() {
         // Set pivot position
         PositionVoltage anglePositionRequest = new PositionVoltage(0).withSlot(0);
-        pivot.setControl(anglePositionRequest.withPosition(state.getAngle()));
+        pivot.setControl(anglePositionRequest.withPosition(getState().getAngle()));
 
         // Set wheel speed
-        wheels.set(state.getSpeed());
+        wheels.set(getState().getSpeed());
     }
 }
