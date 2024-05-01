@@ -46,11 +46,15 @@ public abstract class Subsystem<StateType extends SubsystemStates> {
 
     // Triggers for state transitions
     protected void addTrigger(StateType startType, StateType endType, BooleanSupplier check) {
+        if (triggerMap.get(startType) == null) {
+            triggerMap.put(startType, new ArrayList<Trigger<StateType>>());
+        }
         triggerMap.get(startType).add(new Trigger<StateType>(check, endType));
     }
 
     private void checkTriggers() {
         List<Trigger<StateType>> triggers = triggerMap.get(state);
+        if (triggers == null) return;
         for (var trigger : triggers) {
             if (trigger.isTriggered()) {
                 setState(trigger.getResultState());
@@ -65,8 +69,8 @@ public abstract class Subsystem<StateType extends SubsystemStates> {
     }
 
     public void setState(StateType state) {
+        if (this.state != state) stateTimer.reset();
         this.state = state;
-        stateTimer.reset();
     }
 
     /**
