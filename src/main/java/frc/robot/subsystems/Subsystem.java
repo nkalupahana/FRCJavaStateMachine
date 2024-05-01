@@ -13,8 +13,8 @@ public abstract class Subsystem<StateType extends SubsystemStates> {
     private Map<StateType, ArrayList<Trigger<StateType>>> triggerMap = new HashMap<StateType, ArrayList<Trigger<StateType>>>();
 
     private StateType state = null;
-    protected String subsystemName;
-    protected Timer stateTimer = new Timer();
+    private Timer stateTimer = new Timer();
+    private String subsystemName;
 
     public Subsystem(String subsystemName, StateType defaultState) {
         if (defaultState == null) {
@@ -26,6 +26,16 @@ public abstract class Subsystem<StateType extends SubsystemStates> {
         stateTimer.start();
     }
 
+    // State operation
+    public void periodic() {
+        putSmartDashboard("State", state.getStateString());
+        runState();
+        checkTriggers();
+    }
+    
+    protected abstract void runState();
+    
+    // SmartDashboard utils
     protected void putSmartDashboard(String key, String value) {
         SmartDashboard.putString("[" + subsystemName + "] " + key, value);
     }
@@ -34,14 +44,7 @@ public abstract class Subsystem<StateType extends SubsystemStates> {
         SmartDashboard.putNumber("[" + subsystemName + "] " + key, value);
     }
 
-    public void periodic() {
-        putSmartDashboard("State", state.getStateString());
-        runState();
-        checkTriggers();
-    }
-
-    protected abstract void runState();
-
+    // Triggers for state transitions
     protected void addTrigger(StateType startType, StateType endType, BooleanSupplier check) {
         triggerMap.get(startType).add(new Trigger<StateType>(check, endType));
     }
@@ -56,6 +59,7 @@ public abstract class Subsystem<StateType extends SubsystemStates> {
         }
     }
 
+    // Other utilities
     public StateType getState() {
         return state;
     }
@@ -63,5 +67,15 @@ public abstract class Subsystem<StateType extends SubsystemStates> {
     public void setState(StateType state) {
         this.state = state;
         stateTimer.reset();
+    }
+
+    /**
+     * Gets amount of time the state machine
+     * has been in the current state.
+     * 
+     * @return time in seconds.
+     */
+    protected double getStateTime() {
+        return stateTimer.get();
     }
 }

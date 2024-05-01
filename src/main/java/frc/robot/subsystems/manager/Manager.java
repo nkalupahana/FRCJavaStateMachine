@@ -15,7 +15,7 @@ public class Manager extends Subsystem<ManagerStates> {
         addTrigger(ManagerStates.INTAKING, ManagerStates.IDLE, () -> Robot.driverController.getAButtonPressed());
 
         addTrigger(ManagerStates.IDLE, ManagerStates.OUTTAKING, () -> Robot.driverController.getBButtonPressed());
-        addTrigger(ManagerStates.OUTTAKING, ManagerStates.IDLE, () -> stateTimer.get() > 2);
+        addTrigger(ManagerStates.OUTTAKING, ManagerStates.IDLE, () -> getStateTime() > 2);
     }
 
     @Override
