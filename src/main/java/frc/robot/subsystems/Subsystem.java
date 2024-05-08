@@ -8,6 +8,7 @@ import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Robot;
 
 public abstract class Subsystem<StateType extends SubsystemStates> {
     private Map<StateType, ArrayList<Trigger<StateType>>> triggerMap = new HashMap<StateType, ArrayList<Trigger<StateType>>>();
@@ -30,10 +31,13 @@ public abstract class Subsystem<StateType extends SubsystemStates> {
     public void periodic() {
         putSmartDashboard("State", state.getStateString());
         runState();
+        if (Robot.isSimulation()) runSimulation();
+
         checkTriggers();
     }
     
     protected abstract void runState();
+    protected abstract void runSimulation();
     
     // SmartDashboard utils
     protected void putSmartDashboard(String key, String value) {

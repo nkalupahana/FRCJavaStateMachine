@@ -21,4 +21,9 @@ public class Manager extends Subsystem<ManagerStates> {
         intake.setState(getState().getIntakeState());
         intake.periodic();
     }
+
+    @Override
+    protected void runSimulation() {
+        return;
+    }
 }
