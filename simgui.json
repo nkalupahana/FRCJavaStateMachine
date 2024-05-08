@@ -41,9 +41,6 @@
       }
     }
   },
-  "NetworkTables Info": {
-    "visible": true
-  },
   "Plot": {
     "Plot <0>": {
       "plots": [
@@ -71,8 +68,8 @@
         {
           "axis": [
             {
-              "max": 0.7,
-              "min": -0.2
+              "max": 5.0,
+              "min": -1.0
             }
           ],
           "backgroundColor": [

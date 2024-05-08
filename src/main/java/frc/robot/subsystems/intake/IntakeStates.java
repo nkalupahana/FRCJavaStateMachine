@@ -6,17 +6,17 @@ import frc.robot.subsystems.SubsystemStates;
 public enum IntakeStates implements SubsystemStates {
     OFF(
         "Off", 
-        Constants.Intake.IN_ROTS, 
+        Constants.Intake.IN_ANGLE, 
         0
     ),
     INTAKING(
         "Intaking", 
-        Constants.Intake.OUT_ROTS, 
+        Constants.Intake.OUT_ANGLE, 
         Constants.Intake.INTAKE_SPEED
     ),
     OUTTAKING(
         "Outtaking",
-        Constants.Intake.OUT_ROTS,
+        Constants.Intake.OUT_ANGLE,
         -Constants.Intake.INTAKE_SPEED
     );
 

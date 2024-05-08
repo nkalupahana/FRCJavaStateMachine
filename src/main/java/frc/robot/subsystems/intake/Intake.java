@@ -4,25 +4,38 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.subsystems.Subsystem;
 
 public class Intake extends Subsystem<IntakeStates> {
     TalonFX pivot = new TalonFX(0);
     TalonFX wheels = new TalonFX(1);
 
-    DCMotorSim pivotSimModel = new DCMotorSim(DCMotor.getFalcon500(1), 1, 0.005);
+    SingleJointedArmSim pivotSimModel = new SingleJointedArmSim(
+        DCMotor.getKrakenX60(1), 
+        67.5, // gearing
+        0.192383865, // MOI
+        0.3, // arm length
+        Units.degreesToRadians(0), // min angle -- hard stop 
+        Units.degreesToRadians(180), // max angle -- floor
+        false, 
+        Units.degreesToRadians(0)
+    );
+
+    PIDController pivotPID = new PIDController(0.05, 0, 0);
 
     public Intake() {
         super("Intake", IntakeStates.OFF);
 
         // Configure onboard position PID for pivot
         var pid = new Slot0Configs();
-        pid.kP = 0.5;
+        pid.kP = 0.05;
         pid.kI = 0;
-        pid.kD = 0.05;
+        pid.kD = 0;
 
         pivot.getConfigurator().apply(pid);
     }
@@ -30,8 +43,7 @@ public class Intake extends Subsystem<IntakeStates> {
     @Override
     protected void runState() {
         // Set pivot position
-        PositionVoltage anglePositionRequest = new PositionVoltage(getState().getAngle()).withSlot(0);
-        pivot.setControl(anglePositionRequest);
+        pivot.set(pivotPID.calculate(Units.radiansToDegrees(pivotSimModel.getAngleRads()), getState().getAngle()));
 
         // Set wheel speed
         wheels.set(getState().getSpeed());
@@ -44,9 +56,9 @@ public class Intake extends Subsystem<IntakeStates> {
         pivotSimModel.setInputVoltage(pivotSim.getMotorVoltage());
         pivotSimModel.update(0.020);
 
-        pivotSim.setRawRotorPosition(pivotSimModel.getAngularPositionRotations());
+        pivotSim.setRawRotorPosition(pivotSimModel.getAngleRads());
         pivotSim.setRotorVelocity(
-            Units.radiansToRotations(pivotSimModel.getAngularVelocityRadPerSec())
+            Units.radiansToRotations(pivotSimModel.getVelocityRadPerSec())
         );
     }
 }
