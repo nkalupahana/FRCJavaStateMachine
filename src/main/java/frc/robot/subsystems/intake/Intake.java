@@ -9,6 +9,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.Subsystem;
 
 public class Intake extends Subsystem<IntakeStates> {
@@ -26,14 +27,14 @@ public class Intake extends Subsystem<IntakeStates> {
         Units.degreesToRadians(0)
     );
 
-    PIDController pivotPID = new PIDController(0.05, 0, 0);
+    PIDController pivotPID = new PIDController(10, 0, 0);
 
     public Intake() {
         super("Intake", IntakeStates.OFF);
 
         // Configure onboard position PID for pivot
         var pid = new Slot0Configs();
-        pid.kP = 0.05;
+        pid.kP = 70;
         pid.kI = 0;
         pid.kD = 0;
 
@@ -43,10 +44,14 @@ public class Intake extends Subsystem<IntakeStates> {
     @Override
     protected void runState() {
         // Set pivot position
-        pivot.set(pivotPID.calculate(Units.radiansToDegrees(pivotSimModel.getAngleRads()), getState().getAngle()));
+        //pivot.set(pivotPID.calculate(Units.radiansToRotations(pivotSimModel.getAngleRads()), Units.degreesToRotations(getState().getAngle())));
+        PositionVoltage command = new PositionVoltage(Units.degreesToRotations(getState().getAngle())).withSlot(0);
+        pivot.setControl(command);
 
         // Set wheel speed
         wheels.set(getState().getSpeed());
+
+        putSmartDashboard("Position (deg)", Units.rotationsToDegrees(pivot.getPosition().getValueAsDouble()));
     }
 
     @Override
@@ -56,7 +61,7 @@ public class Intake extends Subsystem<IntakeStates> {
         pivotSimModel.setInputVoltage(pivotSim.getMotorVoltage());
         pivotSimModel.update(0.020);
 
-        pivotSim.setRawRotorPosition(pivotSimModel.getAngleRads());
+        pivotSim.setRawRotorPosition(Units.radiansToRotations(pivotSimModel.getAngleRads()));
         pivotSim.setRotorVelocity(
             Units.radiansToRotations(pivotSimModel.getVelocityRadPerSec())
         );

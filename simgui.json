@@ -41,6 +41,9 @@
       }
     }
   },
+  "NetworkTables Info": {
+    "visible": true
+  },
   "Plot": {
     "Plot <0>": {
       "plots": [
