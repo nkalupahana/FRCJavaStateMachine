@@ -5,5 +5,6 @@ public final class Constants {
         public static final double IN_ANGLE = 0;
         public static final double OUT_ANGLE = 160;
         public static final double INTAKE_SPEED = 0.5;
+        public static final double GEARING = 67.5;
     }
 }

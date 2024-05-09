@@ -1,12 +1,16 @@
 package frc.robot.subsystems.intake;
 
+import com.ctre.phoenix6.configs.FeedbackConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
+import frc.robot.Constants;
 import frc.robot.subsystems.Subsystem;
 
 public class Intake extends Subsystem<IntakeStates> {
@@ -15,7 +19,7 @@ public class Intake extends Subsystem<IntakeStates> {
 
     SingleJointedArmSim pivotSimModel = new SingleJointedArmSim(
         DCMotor.getKrakenX60(1), 
-        67.5, // gearing
+        Constants.Intake.GEARING, // gearing
         0.192383865, // MOI
         0.3, // arm length
         Units.degreesToRadians(0), // min angle -- hard stop 
@@ -34,6 +38,11 @@ public class Intake extends Subsystem<IntakeStates> {
         pid.kD = 0;
 
         pivot.getConfigurator().apply(pid);
+
+        var feedback = new FeedbackConfigs();
+        feedback.SensorToMechanismRatio = Constants.Intake.GEARING;
+        
+        pivot.getConfigurator().apply(feedback);
     }
 
     @Override
@@ -45,7 +54,6 @@ public class Intake extends Subsystem<IntakeStates> {
 
         // Set wheel speed
         wheels.set(getState().getSpeed());
-
     }
 
     @Override
@@ -55,9 +63,9 @@ public class Intake extends Subsystem<IntakeStates> {
         pivotSimModel.setInputVoltage(pivotSim.getMotorVoltage());
         pivotSimModel.update(0.020);
 
-        pivotSim.setRawRotorPosition(Units.radiansToRotations(pivotSimModel.getAngleRads()));
+        pivotSim.setRawRotorPosition(Units.radiansToRotations(pivotSimModel.getAngleRads()) * Constants.Intake.GEARING);
         pivotSim.setRotorVelocity(
-            Units.radiansToRotations(pivotSimModel.getVelocityRadPerSec())
+            Units.radiansToRotations(pivotSimModel.getVelocityRadPerSec()) * Constants.Intake.GEARING
         );
     }
 }
