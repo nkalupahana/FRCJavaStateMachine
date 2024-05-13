@@ -14,10 +14,20 @@ public enum IntakeStates implements SubsystemStates {
         Constants.Intake.OUT_ANGLE, 
         Constants.Intake.INTAKE_SPEED
     ),
-    OUTTAKING(
-        "Outtaking",
+    EVALUATE(
+        "Evaluating Results",
         Constants.Intake.OUT_ANGLE,
-        -Constants.Intake.INTAKE_SPEED
+        Constants.Intake.INTAKE_SPEED
+    ),
+    ACCEPT(
+        "Accepted",
+        Constants.Intake.OUT_ANGLE, 
+        Constants.Intake.INTAKE_SPEED
+    ),
+    REJECT(
+        "Rejected",
+        Constants.Intake.OUT_ANGLE, 
+        Constants.Intake.INTAKE_SPEED
     );
 
     IntakeStates(String stateString, double angle, double speed) {

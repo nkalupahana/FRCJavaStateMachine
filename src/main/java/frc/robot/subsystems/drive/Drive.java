@@ -14,10 +14,13 @@ import swervelib.parser.SwerveParser;
 
 public class Drive extends Subsystem<DriveStates> {
     SwerveDrive drive;
-    PIDController angleController = new PIDController(37, 0, 0.1);
+    // TODO: Tune PID values
+    // Other than optional logging,
+    // THIS IS ALL YOU SHOULD MODIFY
+    PIDController angleController = new PIDController(0, 0, 0);
 
     public Drive() {
-        super("Drive", DriveStates.STANDARD);
+        super("Drive", DriveStates.OFF);
         
         try {
             drive = new SwerveParser(new File(Filesystem.getDeployDirectory(), "neokraken"))
@@ -29,13 +32,44 @@ public class Drive extends Subsystem<DriveStates> {
             System.err.println("Swerve module data could not be processed!");
             System.err.println(e);
         }
+
+        /// Configure triggers for state transitions in testing
+        addTrigger(DriveStates.OFF, DriveStates.STANDARD, () -> true);
+        // Drive -> Evaluate/Reject
+        addTrigger(DriveStates.STANDARD, DriveStates.EVALUATE, () -> {
+            return nearSetpoint() && getStateTime() < Constants.Drive.MAX_TIME_TO_SETPOINT;
+        });
+        addTrigger(DriveStates.STANDARD, DriveStates.REJECT, () -> {
+            if (getStateTime() > Constants.Drive.MAX_TIME_TO_SETPOINT) {
+                System.out.println("Drive reject: took too long to reach setpoint.");
+                return true;
+            };
+
+            return false;
+        });
+
+        // Evalute -> Accept/Reject
+        addTrigger(DriveStates.EVALUATE, DriveStates.ACCEPT, () -> getStateTime() > Constants.EVALUATION_TIME);
+        addTrigger(DriveStates.EVALUATE, DriveStates.REJECT, () -> {
+            if (!nearSetpoint()) {
+                System.out.println("Drive reject: Left setpoint during evaluation.");
+                return true;
+            }
+            return false;
+        });
+    }
+
+    public boolean nearSetpoint() {
+        return Math.abs(Constants.Drive.TARGET_ANGLE - drive.getYaw().getDegrees()) < Constants.TEST_DELTA;
     }
 
     @Override
     protected void runState() {
         drive.drive(
             new Translation2d(0, 0), 
-            angleController.calculate(drive.getYaw().getRadians(), Units.degreesToRadians(90)), 
+            angleController.calculate(
+                drive.getYaw().getRadians(), 
+                Units.degreesToRadians(Constants.Drive.TARGET_ANGLE)), 
             false,
             false);
     }

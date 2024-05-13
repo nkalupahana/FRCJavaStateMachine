@@ -31,9 +31,12 @@ public class Intake extends Subsystem<IntakeStates> {
 
         // Configure onboard position PID for pivot
         var pid = new Slot0Configs();
-        pid.kP = 350;
-        pid.kI = 0;
-        pid.kD = 0.8;
+        // TODO: tune PID
+        // Other than optional logging,
+        // THIS IS ALL YOU SHOULD MODIFY
+        //pid.kP = ?;
+        //pid.kI = ?;
+        //pid.kD = ?;
 
         pivot.getConfigurator().apply(pid);
 
@@ -41,6 +44,36 @@ public class Intake extends Subsystem<IntakeStates> {
         feedback.SensorToMechanismRatio = Constants.Intake.GEARING;
         
         pivot.getConfigurator().apply(feedback);
+
+        /// Configure triggers for state transitions in testing
+        addTrigger(IntakeStates.OFF, IntakeStates.INTAKING, () -> true);
+        // Intake -> Evaluate/Reject
+        addTrigger(IntakeStates.INTAKING, IntakeStates.EVALUATE, () -> {
+            return nearSetpoint() && getStateTime() < Constants.Intake.MAX_TIME_TO_SETPOINT;
+        });
+        
+        addTrigger(IntakeStates.INTAKING, IntakeStates.REJECT, () -> {
+            if (getStateTime() > Constants.Intake.MAX_TIME_TO_SETPOINT) {
+                System.out.println("Intake reject: took too long to reach setpoint.");
+                return true;
+            };
+
+            return false;
+        });
+
+        // Evalute -> Accept/Reject
+        addTrigger(IntakeStates.EVALUATE, IntakeStates.ACCEPT, () -> getStateTime() > Constants.EVALUATION_TIME);
+        addTrigger(IntakeStates.EVALUATE, IntakeStates.REJECT, () -> {
+            if (!nearSetpoint()) {
+                System.out.println("Intake reject: Left setpoint during evaluation.");
+                return true;
+            }
+            return false;
+        });
+    }
+
+    public boolean nearSetpoint() {
+        return Math.abs(getState().getAngle() - Units.radiansToDegrees(pivotSimModel.getAngleRads())) < Constants.TEST_DELTA;
     }
 
     @Override
