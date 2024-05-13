@@ -31,9 +31,9 @@ public class Intake extends Subsystem<IntakeStates> {
 
         // Configure onboard position PID for pivot
         var pid = new Slot0Configs();
-        pid.kP = 150;
+        pid.kP = 350;
         pid.kI = 0;
-        pid.kD = 0;
+        pid.kD = 1;
 
         pivot.getConfigurator().apply(pid);
 
