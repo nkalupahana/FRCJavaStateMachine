@@ -14,7 +14,7 @@ import swervelib.parser.SwerveParser;
 
 public class Drive extends Subsystem<DriveStates> {
     SwerveDrive drive;
-    PIDController angleController = new PIDController(32, 0, 0);
+    PIDController angleController = new PIDController(37, 0, 0.1);
 
     public Drive() {
         super("Drive", DriveStates.STANDARD);

@@ -33,7 +33,7 @@ public class Intake extends Subsystem<IntakeStates> {
         var pid = new Slot0Configs();
         pid.kP = 350;
         pid.kI = 0;
-        pid.kD = 1;
+        pid.kD = 0.8;
 
         pivot.getConfigurator().apply(pid);
 
