@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
+import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.manager.Manager;
 
 /**
@@ -17,6 +18,7 @@ import frc.robot.subsystems.manager.Manager;
 public class Robot extends TimedRobot {
   public static final XboxController driverController = new XboxController(0);
   Manager manager = new Manager();
+  Drive drive = new Drive();
 
   @Override
   public void robotInit() {}
@@ -24,6 +26,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     manager.periodic();
+    drive.periodic();
   }
 
   @Override

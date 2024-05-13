@@ -19,11 +19,34 @@
       "window": {
         "visible": false
       }
+    },
+    "Timing": {
+      "window": {
+        "visible": false
+      }
     }
   },
   "NTProvider": {
     "types": {
-      "/FMSInfo": "FMSInfo"
+      "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/navX-Sensor[2]": "Gyro"
+    },
+    "windows": {
+      "/SmartDashboard/Field": {
+        "XModules": {
+          "style": "Hidden"
+        },
+        "bottom": 1476,
+        "height": 8.210550308227539,
+        "left": 150,
+        "right": 2961,
+        "top": 79,
+        "width": 16.541748046875,
+        "window": {
+          "visible": true
+        }
+      }
     }
   },
   "NetworkTables": {
@@ -40,12 +63,21 @@
         "open": true
       },
       "SmartDashboard": {
-        "open": true
+        "JSON": {
+          "open": true
+        },
+        "open": true,
+        "swerve": {
+          "open": true
+        }
       }
     }
   },
   "NetworkTables Info": {
     "visible": true
+  },
+  "NetworkTables View": {
+    "visible": false
   },
   "Plot": {
     "Plot <0>": {
@@ -126,6 +158,37 @@
                 1.0
               ],
               "id": "NT:/SmartDashboard/[Intake] Position (deg)"
+            }
+          ]
+        }
+      ]
+    },
+    "Plot <3>": {
+      "plots": [
+        {
+          "axis": [
+            {
+              "max": 95.0,
+              "min": -5.0
+            }
+          ],
+          "backgroundColor": [
+            0.0,
+            0.0,
+            0.0,
+            0.8500000238418579
+          ],
+          "height": 338,
+          "series": [
+            {
+              "color": [
+                0.2980392277240753,
+                0.44705885648727417,
+                0.6901960968971252,
+                1.0
+              ],
+              "digital": "Auto",
+              "id": "NT:/SmartDashboard/swerve/robotRotation"
             }
           ]
         }

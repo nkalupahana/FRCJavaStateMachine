@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
@@ -30,6 +31,8 @@ public abstract class Subsystem<StateType extends SubsystemStates> {
     // State operation
     public void periodic() {
         putSmartDashboard("State", state.getStateString());
+        if (!DriverStation.isEnabled()) return;
+
         runState();
         if (Robot.isSimulation()) runSimulation();
 
